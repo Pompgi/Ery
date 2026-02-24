@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import yt_dlp
 import asyncio
 import random
+from triggers import check_triggers
 
 # Load token
 load_dotenv()
@@ -43,39 +44,10 @@ async def on_message(message):
 
     content = message.content.lower()
     
-    responded = False  # track if we already replied
-
-    # Peepeepoopoo trigger
-    if "peepeepoopoo" in content and not responded:
-        await message.channel.send("peepeepoopoo")
-        responded = True
-
-    # Food trigger
-    if "food" in content and not responded:
-        await message.channel.send(f"HMMMM, Very tasky, {message.author.mention}!")
-        responded = True
-
-    # Dad joke trigger
-    if ("im hungry" in content or "i'm hungry" in content) and not responded:
-        await message.channel.send(f"Hi HUNGRY, I'm DAD {message.author.mention}!")
-        responded = True
-
-    # Dad joke 2
-    if ("im bak" in content or "i'm bak" in content or "bak" in content or "im back" in content or "i'm back" in content) and not responded:
-        await message.channel.send(f"Hi BACK, i'm FRONT {message.author.mention}!")
-        responded = True
-
-    if "talk" in content and not responded:
-        phrases = [
-            f"You are loved, and I'm one of the many people who love you",
-            f"Sometime it might not be much, but how you got here is definitely no easy road, and you should be proud of yourself",
-            f"Yes tell me how are you today as well, I've missed you",
-            f"Have you ever wondered the probability of us meeting? crazy am i right?",
-            f"Hey, i'm here!",
-            f"Nah, id rather stare into your eyes and listen to your voice"
-        ]
-        await message.channel.send(random.choice(phrases))
-        return  # stop here so only one reply
+    # Check triggers using the separate module
+    should_return = await check_triggers(message, content)
+    if should_return:
+        return
 
     # Always process commands last
     await bot.process_commands(message)
